@@ -1,9 +1,6 @@
 const rootUrl = "https://restcountries.com/v3.1/";
 const contentElement = document.getElementById("content");
-const searchInputElement = document.getElementById("search-input");
-const searchButtonElement = document.getElementById("search-button");
-let searchText = "";
-const clear = document.getElementById("search-input");
+const formElement = document.getElementById("form");
 
 //function som plocka ut de informationer som jag behöver från arrayen från server
 function extractData(item) {
@@ -28,12 +25,8 @@ async function searchByLanguage(text){
     //manipulerar data från servern
     const mapedData = data.map(extractData)
     return mapedData;
-}
 
-searchInputElement.addEventListener('change', event => {
-    const value = event.target.value;
-    searchText = value
-})
+}
 
 //sortera ut det landet som har mest i population
 function sortItems(itemA, itemB) {
@@ -70,23 +63,22 @@ function itemToHtmlStr(item) {
     `
 }
 
-searchButtonElement.addEventListener("click", async () => {
-    try {
-        const data = await searchByLanguage(searchText)
-        contentElement.innerHTML = 
-        data
-        .sort(sortItems)
-        .map(itemToHtmlStr).join("")
-    }
-    catch {
-        contentElement.innerHTML = `
-            <div class="error">
-                No languages found
-            </div>
-        `
-    }
-})
+formElement.addEventListener('submit', async event =>{
+    event.preventDefault();
+    const value = event.target[0].value;
 
-clear.addEventListener("click", ()=>{
-    clear.value = "";
+    try {
+                const data = await searchByLanguage(value);
+                contentElement.innerHTML = 
+                data
+                .sort(sortItems)
+                .map(itemToHtmlStr).join("")
+            }
+            catch {
+                contentElement.innerHTML = `
+                    <div class="error">
+                        No languages found
+                    </div>
+                `
+            }
 })
